@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>动态波浪线</title>
+	<script src="http://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+	<script>
+		// ctx 为 画布对象
+		// r 为圆球的半径
+		// m 为相邻两球圆心的 x 轴距离
+		// g 为重力变量
+		// h 为画布高度
+		// w 为画布宽度,当前为自动适应窗口宽度。
+		// ah 箭头预留高度
+		// color 为颜色
+		function draw_ball(){
+			if(Math.abs(x-mx)<=ah){
+				ry=y-ah+Math.abs(x-mx);
+			}else{
+				ry=y;
+			}
+			ctx.beginPath();
+			ctx.arc(x,ry,r,0,Math.PI*2,true); 
+			ctx.fillStyle = color; 
+			ctx.fill();
+		}
+		function draw_wave(){
+			if(Number(y).toFixed(2)==(r+ah)){
+				k = 0;
+			}
+			x = r;
+			y = r + ah;
+			z = 0;
+			for(i=1;i<=k;i++){
+				if(y<((h-ah)/2+ah)){
+					z += r*g;
+					y += z;
+				}else{
+					z -= r*g;
+					y += z;
+				}
+			}
+			k++;
+			canvas.width = w;
+			canvas.height = h;
+			while(x<w){
+				draw_ball(ctx,x,y,r)
+				x += m;
+				if(y<((h-ah)/2+ah)){
+					z += r*g;
+					y += z;
+				}else{
+					z -= r*g;
+					y += z;
+				}
+			}
+
+		}
+		var k,r,m,g,h,w,ah,x,y,canvas,ctx,mx,color;
+		$(document).ready(function(){
+			r = 1;
+			m = 3;
+			g = 0.01;
+			h = 20;
+			w = $(window).width();
+			ah = 10;
+			k = 0;
+			color = "#666";
+			$(window).mousemove(function(e){
+				mx=e.pageX;
+			});
+			$(window).resize(function(){
+				w = $(window).width();
+			});
+			canvas = document.getElementById('line');
+			if (canvas.getContext) {
+				ctx = canvas.getContext('2d');
+			}
+			myScroll = setInterval("draw_wave()",50);
+		});
+	</script>
+	<style>
+		html, body {margin:0;}
+	</style>
+</head>
+<body>
+	<canvas id="line">
+		您的浏览器不支持canvas！
+	</canvas>
+</body>
+</html>
